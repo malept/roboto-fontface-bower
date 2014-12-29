@@ -1,26 +1,40 @@
 $roboto-font-path: 'fonts' !default;
+$roboto-all-font-exts: 'eot' 'woff2' 'woff' 'ttf' 'svg';
+$roboto-font-exts: $roboto-all-font-exts !default;
+$-font-formats: ('eot': 'embedded-opentype', 'woff2': 'woff2', 'woff': 'woff', 'ttf': 'truetype', 'svg': 'svg');
+$-font-suffixes: ('eot': '#iefix', 'svg': '#Roboto');
+
+@function -roboto-font-url($urls, $type, $ext) {
+    @if index($roboto-font-exts, $ext) {
+        $format: map-get($-font-formats, $ext);
+        $suffix: map-get($-font-suffixes, $ext);
+        $urls: append($urls, url('#{$roboto-font-path}/Roboto-#{$type}.#{$ext}#{$suffix}') format($format), comma);
+    }
+    @return $urls;
+}
+
+@mixin -roboto-font-src($type) {
+    $roboto-font-urls: ();
+    @each $ext in $roboto-all-font-exts {
+        $roboto-font-urls: -roboto-font-url($roboto-font-urls, $type, $ext);
+    }
+    @if index($roboto-font-exts, 'eot') {
+        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot');
+    }
+    src: $roboto-font-urls;
+}
 
 @mixin roboto-font($type, $weight, $style: normal) {
     @font-face {
         font-family: 'Roboto';
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot');
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot?#iefix') format('embedded-opentype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff2') format('woff2'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff') format('woff'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.ttf') format('truetype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.svg#Roboto') format('svg');
+        @include -roboto-font-src($type);
         font-weight: $weight;
         font-style: $style;
     }
 
     @font-face {
         font-family: 'Roboto-#{$type}';
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot');
-        src: url('#{$roboto-font-path}/Roboto-#{$type}.eot?#iefix') format('embedded-opentype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff2') format('woff2'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.woff') format('woff'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.ttf') format('truetype'),
-             url('#{$roboto-font-path}/Roboto-#{$type}.svg#Roboto') format('svg');
+        @include -roboto-font-src($type);
     }
 }
 
